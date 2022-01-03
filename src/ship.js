@@ -64,8 +64,8 @@ class Ship {
         this.ctx.lineTo(this.body.x + this.body.w + this.SHIP_WING_WIDTH, this.body.y + this.body.h);
         this.ctx.lineTo(this.body.x + this.body.w, this.body.y + this.body.h - 10);
 
-        // this.ctx.fillStyle = 'DodgerBlue';
-        // this.ctx.fill();
+        this.ctx.fillStyle = 'black';
+        this.ctx.fill();
         this.ctx.strokeStyle = 'white';
         this.ctx.stroke();
     }

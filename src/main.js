@@ -14,6 +14,7 @@ window.addEventListener('resize', (event) => {
     canvas.height = window.innerHeight;
 });
 
+let stars = [];
 let ship = new Ship(canvas);
 let enemies = [];
 let particles = [];
@@ -22,6 +23,17 @@ let points = 0;
 let damageUpgradeCost = 100;
 let fireRateUpgradeCost = 100;
 let cannonsUpgradeCost = 10000;
+
+// create initial stars for the background
+for(let i = 0; i < 750; i++) {
+    stars.push(new Star(Math.random() * canvas.width, Math.random() * canvas.height));
+}
+
+// spawn stars continuously
+window.setInterval(() => {
+    if(!paused)
+        stars.push(new Star(Math.random() * canvas.width, -5));
+}, 100);
 
 const updatePointsDisplay = () => {
     pointsDisplay.innerHTML = 'Points available: ' + points;
@@ -166,9 +178,50 @@ const drawPoints = () => {
     ctx.strokeText(`Points: ${points}`, (canvas.width / 2), 40);
 }
 
+const drawAndUpdateStars = () => {
+    stars.forEach(star => {
+        star.update();
+
+    
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.r, 0, 2 * Math.PI);
+        ctx.fillStyle = 'white';
+        ctx.fill();
+    });
+}
+
+/*
+ * Remove objects as they go off the screen
+ * This includes:
+ * - stars
+ * - lasers
+ * - enemies
+ */
+const removeOffscreenObjects = () => {
+    stars.forEach((star, indx) => {
+        if(star.y - star.r > canvas.height) {
+            stars.splice(indx, 1);
+        }
+    });
+
+    enemies.forEach((enemy, indx) => {
+        if(enemy.y - enemy.r > canvas.height) {
+            enemies.splice(indx, 1);
+        }
+    });
+
+    ship.lasers.forEach((laser, indx) => {
+        if(laser.x + laser.height < 0) {
+            ship.lasers.splice(indx, 1);
+        }
+    });
+}
+
 const animate = () => {
+
     if(!paused) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawAndUpdateStars();
         ship.updateAndRenderLasers();
         ship.render();
 
@@ -182,6 +235,7 @@ const animate = () => {
         checkEnemyHit();
         updateParticles();
         drawPoints();
+        removeOffscreenObjects();
     }
 
     requestAnimationFrame(animate);
