@@ -25,7 +25,7 @@ class Ship {
         );
 
         this.lasers = []; // list of lasers fired by this ship
-        this.laserDamage = 0.75; // initial damage inflicted by 1 laser
+        this.laserDamage = 0.8; // initial damage inflicted by 1 laser
         this.fireRate = 500; // initial milliseconds between lasers being fired
         this.numCannons = 1; // max of 3 cannons
     }

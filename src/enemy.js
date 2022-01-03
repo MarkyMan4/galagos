@@ -32,26 +32,27 @@ class Enemy {
             velocity = 2;
             health = 10;
             color = '#FCFC1F';
-            pointValue = 40;
+            pointValue = 50;
         }
         else if(type === 3) {
             radius = 100;
             velocity = 1;
             health = 50;
             color = '#FF3361';
-            pointValue = 200;
+            pointValue = 250;
         }
         else {
             radius = 150;
             velocity = 0.25;
             health = 100;
             color = '#3A87FD';
-            pointValue = 500;
+            pointValue = 750;
         }
 
         this.r = radius;
         this.velocity = velocity;
         this.health = health; // take 3 hits to kill an enemy
+        this.maxHealth = health;
         this.color = color;
         this.pointValue = pointValue; // how many points the player gets for killing the enemy
 
@@ -73,7 +74,8 @@ class Enemy {
         this.hitBox.y += this.velocity;
     }
 
-    render() {        
+    render() {
+        // draw the enemy
         this.ctx.beginPath();
         this.ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
         this.ctx.fillStyle = this.color;
@@ -81,6 +83,23 @@ class Enemy {
         this.ctx.strokeStyle = 'white';
         this.ctx.stroke();
 
+        // draw a health bar
+        let healthBarX = this.x - this.r;
+        let healthBarY = this.y - this.r - 12;
+
+        // bar representing how much health is left
+        this.ctx.beginPath();
+        this.ctx.rect(healthBarX, healthBarY, (this.health / this.maxHealth) * (this.r * 2), 4);
+        this.ctx.fillStyle = 'red';
+        this.ctx.fill();
+
+        // outline of health bar
+        this.ctx.beginPath();
+        this.ctx.rect(healthBarX, healthBarY, this.r * 2, 4);
+        this.ctx.strokeStyle = 'white';
+        this.ctx.stroke();
+
+        // draw the hitbox if this option is set to true
         if(this.showHitBox) {
             this.ctx.beginPath();
             this.ctx.rect(this.hitBox.x, this.hitBox.y, this.hitBox.w, this.hitBox.h);

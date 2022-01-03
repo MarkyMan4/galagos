@@ -1,10 +1,9 @@
 class Particle {
-    // colors = ['']
-
-    constructor(ctx, x, y) {
+    constructor(ctx, x, y, color) {
         this.ctx = ctx;
         this.x = x;
         this.y = y;
+        this.color = color;
         this.r = Math.random() * 10;
         this.xVel = Math.random() * 10 * (Math.random() < 0.5 ? -1 : 1);
         this.yVel = Math.random() * 10 * (Math.random() < 0.5 ? -1 : 1);
@@ -22,7 +21,7 @@ class Particle {
     render() {
         this.ctx.beginPath();
         this.ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI);
-        this.ctx.fillStyle = 'DodgerBlue';
+        this.ctx.fillStyle = this.color;
         this.ctx.fill();
     }
 }

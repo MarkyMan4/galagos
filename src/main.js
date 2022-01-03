@@ -22,7 +22,7 @@ let paused = false;
 let points = 0;
 let damageUpgradeCost = 100;
 let fireRateUpgradeCost = 100;
-let cannonsUpgradeCost = 10000;
+let cannonsUpgradeCost = 7500;
 
 // create initial stars for the background
 for(let i = 0; i < 750; i++) {
@@ -76,11 +76,11 @@ const upgradeDamage = () => {
     // make sure the player has enough points
     if(points >= damageUpgradeCost) {
         // multiply the current damage dealt by 1.5
-        ship.laserDamage *= 1.5;
+        ship.laserDamage *= 1.25;
 
         // decrement player points by the current cost, then double the cost of the next upgrade
         points -= damageUpgradeCost;
-        damageUpgradeCost = Math.floor(damageUpgradeCost * 1.5); // keep it a whole number
+        damageUpgradeCost = Math.floor(damageUpgradeCost * 1.75); // keep it a whole number
 
         // update labels in the menu
         updateCostDisplays();
@@ -88,14 +88,14 @@ const upgradeDamage = () => {
     }
 }
 
-// need to find a good way to do this, don't want fire rate to get down to 0 or less
+// TODO: cap this at a certain fire rate
 const upgradeFireRate = () => {
     if(points >= fireRateUpgradeCost) {
-        ship.fireRate -= 50;
+        ship.fireRate -= 40;
 
         // decrement player points by the current cost, then double the cost of the next upgrade
-        points -= damageUpgradeCost;
-        fireRateUpgradeCost = Math.floor(fireRateUpgradeCost * 1.5); // keep it a whole number
+        points -= fireRateUpgradeCost;
+        fireRateUpgradeCost = Math.floor(fireRateUpgradeCost * 1.75); // keep it a whole number
 
         // update labels in the menu
         updateCostDisplays();
@@ -107,6 +107,21 @@ const upgradeFireRate = () => {
             if(!paused)
                 ship.fire();
         }, ship.fireRate);
+    }
+}
+
+// TODO: cap this at three
+const upgradeCannons = () => {
+    if(points >= cannonsUpgradeCost) {
+        ship.numCannons++;
+
+        // decrement player points by the current cost, then double the cost of the next upgrade
+        points -= cannonsUpgradeCost;
+        cannonsUpgradeCost = Math.floor(cannonsUpgradeCost * 2); // keep it a whole number
+
+        // update labels in the menu
+        updateCostDisplays();
+        updatePointsDisplay();
     }
 }
 
@@ -135,7 +150,7 @@ window.setInterval(() => {
             let enemy = new Enemy(
                 ctx,
                 Math.random() * canvas.width,
-                (Math.random() * 100) - 50,
+                ((Math.random() * 150) + 150) * -1,
                 enemyType
             );
 
@@ -150,11 +165,20 @@ document.addEventListener('mousemove', (event) => {
         ship.setPos(event.clientX, event.clientY);
 });
 
-const addExplosion = (x, y) => {
+// explosion animation when an enemy blows up
+const addEnemyExplosion = (x, y) => {
     for(let i = 0; i < 20; i++) {
-        particles.push(new Particle(ctx, x, y));
+        particles.push(new Particle(ctx, x, y, 'DodgerBlue'));
     }
 }
+
+// explosion animation when a laser hits an enemy
+const addLaserExplosion = (x, y) => {
+    for(let i = 0; i < 5; i++) {
+        particles.push(new Particle(ctx, x, y, 'white'));
+    }
+}
+
 
 // check if any lasers hit an enemy
 const checkEnemyHit = () => {
@@ -167,12 +191,13 @@ const checkEnemyHit = () => {
             if(laserIsInHitBox) {
                 // if hit, decrement enemy health and remove the laser
                 enemy.health -= ship.laserDamage;
+                addLaserExplosion(laser.x, laser.y);
                 ship.lasers.splice(laserIndx, 1);
 
                 // remove the enemy when their health gets to 0 and give the player 10 points
                 if(enemy.health <= 0) {
                     points += enemy.pointValue;
-                    addExplosion(enemy.x, enemy.y);
+                    addEnemyExplosion(enemy.x, enemy.y);
                     enemies.splice(enemyIndx, 1);
                 }
             }
