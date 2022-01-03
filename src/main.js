@@ -217,12 +217,21 @@ const updateParticles = () => {
 }
 
 const drawPoints = () => {
+    // score
     ctx.font = 'bold 40px Arial';
     ctx.textAlign = 'center';
     ctx.fillStyle = 'white';
     ctx.fillText(`Points: ${points}`, (canvas.width / 2), 40);
     ctx.strokeStyle = 'black';
     ctx.strokeText(`Points: ${points}`, (canvas.width / 2), 40);
+
+    // text telling how to open menu
+    ctx.font = 'bold 24px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'white';
+    ctx.fillText("Press 'm' to see upgrades", (canvas.width / 2), 80);
+    ctx.strokeStyle = 'black';
+    ctx.strokeText("Press 'm' to see upgrades", (canvas.width / 2), 80);
 }
 
 const drawAndUpdateStars = () => {
