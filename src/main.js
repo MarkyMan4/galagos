@@ -65,6 +65,12 @@ const resumeGame = () => {
     setTimeout(() => {paused = false}, 2000);
 }
 
+// automatically fire a laser - based on the ships fire rate
+let fireRateInterval = setInterval(() => {
+    if(!paused)
+        ship.fire();
+}, ship.fireRate);
+
 // called when the player purchases a damage upgrade
 const upgradeDamage = () => {
     // make sure the player has enough points
@@ -74,7 +80,7 @@ const upgradeDamage = () => {
 
         // decrement player points by the current cost, then double the cost of the next upgrade
         points -= damageUpgradeCost;
-        damageUpgradeCost *= 2;
+        damageUpgradeCost = Math.floor(damageUpgradeCost * 1.5); // keep it a whole number
 
         // update labels in the menu
         updateCostDisplays();
@@ -82,11 +88,27 @@ const upgradeDamage = () => {
     }
 }
 
-// automatically fire a laser every 0.25 seconds
-window.setInterval(() => {
-    if(!paused)
-        ship.fire();
-}, 250);
+// need to find a good way to do this, don't want fire rate to get down to 0 or less
+const upgradeFireRate = () => {
+    if(points >= fireRateUpgradeCost) {
+        ship.fireRate -= 50;
+
+        // decrement player points by the current cost, then double the cost of the next upgrade
+        points -= damageUpgradeCost;
+        fireRateUpgradeCost = Math.floor(fireRateUpgradeCost * 1.5); // keep it a whole number
+
+        // update labels in the menu
+        updateCostDisplays();
+        updatePointsDisplay();
+
+        // reset the interval that fires lasers to use the new fire rate
+        clearInterval(fireRateInterval);
+        fireRateInterval = setInterval(() => {
+            if(!paused)
+                ship.fire();
+        }, ship.fireRate);
+    }
+}
 
 // spawn 1 - 3 enemies at a random place every second
 window.setInterval(() => {

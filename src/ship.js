@@ -5,7 +5,7 @@ class Ship {
     SHIP_CANNON_WIDTH = 10;
     SHIP_CANNON_HEIGHT = 20;
     LASER_WIDTH = 10;
-    LASER_HEIGHT = 20;
+    LASER_HEIGHT = 30;
     LASER_VELOCITY = -15;
 
     // must be given a canvas it can draw to
@@ -25,7 +25,9 @@ class Ship {
         );
 
         this.lasers = []; // list of lasers fired by this ship
-        this.laserDamage = 1; // how much damage is inflicted by 1 laser
+        this.laserDamage = 0.75; // initial damage inflicted by 1 laser
+        this.fireRate = 500; // initial milliseconds between lasers being fired
+        this.numCannons = 1; // max of 3 cannons
     }
 
     setPos(x, y) {
@@ -70,18 +72,35 @@ class Ship {
         this.ctx.stroke();
     }
 
-    // fire a laser
-    fire() {
+    addLaser(x, y) {
         const laser = new Laser(
             this.ctx, 
-            this.x - (this.LASER_WIDTH / 2), 
-            this.y - (this.SHIP_BODY_SIZE / 2) - this.SHIP_CANNON_HEIGHT, 
+            x, 
+            y, 
             this.LASER_WIDTH, 
             this.LASER_HEIGHT, 
             this.LASER_VELOCITY
         );
 
         this.lasers.push(laser);
+    }
+
+    // fire a laser from each cannon
+    fire() {
+        let baseX = this.x - (this.LASER_WIDTH / 2);
+        let baseY = this.y - (this.SHIP_BODY_SIZE / 2) - this.SHIP_CANNON_HEIGHT;
+
+        if(this.numCannons >= 1) {
+            this.addLaser(baseX, baseY);
+        }
+
+        if(this.numCannons >= 2) {
+            this.addLaser(baseX - 20, baseY + 20);
+        }
+
+        if(this.numCannons >= 3) {
+            this.addLaser(baseX + 20, baseY + 20);
+        }        
     }
 
     // call the functions to update and draw each laser fired by this ship
