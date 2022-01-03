@@ -25,6 +25,7 @@ class Ship {
         );
 
         this.lasers = []; // list of lasers fired by this ship
+        this.laserDamage = 1; // how much damage is inflicted by 1 laser
     }
 
     setPos(x, y) {

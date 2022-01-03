@@ -5,4 +5,13 @@
     left: 0;
     top: 0;
     background-color: black;
+    z-index: -1;
+}
+
+#menu {
+    background-color: white;
+    padding: 30px;
+    z-index: 1;
+    display: none;
+    width: 30%;
 }
