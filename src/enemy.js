@@ -7,8 +7,10 @@ class Enemy {
      * 2 = medium
      * 3 = strong
      * 4 = strongest
+     * 
+     * difficulty acts like a multiplier for enemy velocity, health and point value
      */
-    constructor(ctx, x, y, type) {
+    constructor(ctx, x, y, type, difficulty) {
         this.ctx = ctx;
         this.x = x;
         this.y = y;
@@ -50,11 +52,11 @@ class Enemy {
         }
 
         this.r = radius;
-        this.velocity = velocity;
-        this.health = health; // take 3 hits to kill an enemy
-        this.maxHealth = health;
+        this.velocity = velocity + difficulty;
+        this.health = health + (health * (difficulty / 2)); // take 3 hits to kill an enemy
+        this.maxHealth = this.health;
         this.color = color;
-        this.pointValue = pointValue; // how many points the player gets for killing the enemy
+        this.pointValue = pointValue + (pointValue * (difficulty / 2)); // how many points the player gets for killing the enemy
 
         // anything that enters this box is considered to be touching this object
         // this box is slightly smaller than the enemy itself

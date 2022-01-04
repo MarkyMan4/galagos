@@ -5,6 +5,8 @@ const damageUpCostDisplay = document.getElementById('damage-up-cost');
 const fireRateUpCostDisplay = document.getElementById('fire-rate-up-cost');
 const cannonsUpCostDisplay = document.getElementById('cannons-up-cost');
 const pointsDisplay = document.getElementById('points-display');
+const upgradeFireRateBtn = document.getElementById('upgrade-fire-rate-btn');
+const upgradeCannonBtn = document.getElementById('upgrade-cannon-btn');
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -19,10 +21,19 @@ let ship = new Ship(canvas);
 let enemies = [];
 let particles = [];
 let paused = false;
-let points = 0;
+let points = 150000;
 let damageUpgradeCost = 100;
 let fireRateUpgradeCost = 100;
 let cannonsUpgradeCost = 7500;
+
+// maximum # of times each upgrade can be purchased (no limit on damage)
+let fireRateUpgradesPurchased = 0;
+let maxFireRateUpgrades = 10;
+let cannonUpgradesPurchased = 0;
+let maxCannonsUpgrades = 2;
+
+let difficulty = 0;
+let upgradesPurchased = 0; // difficulty increases every 5 upgrade purchases
 
 // create initial stars for the background
 for(let i = 0; i < 750; i++) {
@@ -42,14 +53,27 @@ const updatePointsDisplay = () => {
 const updateCostDisplays = () => {
     // show the cost of each upgrade
     damageUpCostDisplay.innerHTML = 'Cost: ' + damageUpgradeCost;
-    fireRateUpCostDisplay.innerHTML = 'Cost: ' + fireRateUpgradeCost;
-    cannonsUpCostDisplay.innerHTML = 'Cost: ' + cannonsUpgradeCost;
+
+    if(fireRateUpgradesPurchased >= maxFireRateUpgrades) {
+        fireRateUpCostDisplay.innerHTML = 'Maxed out';
+        upgradeFireRateBtn.disabled = true;
+    }
+    else {
+        fireRateUpCostDisplay.innerHTML = 'Cost: ' + fireRateUpgradeCost;
+    }
+
+    if(cannonUpgradesPurchased >= maxCannonsUpgrades) {
+        cannonsUpCostDisplay.innerHTML = 'Maxed out';
+        upgradeCannonBtn.disabled = true;
+    }
+    else {
+        cannonsUpCostDisplay.innerHTML = 'Cost: ' + cannonsUpgradeCost;
+    }
 }
 
 // when m pressed, pause game and open menu
 document.addEventListener('keydown', (event) => {
     if(event.key === 'm') {
-        console.log('yea');
         paused = true;
         menu.style.display = 'block';
 
@@ -71,6 +95,12 @@ let fireRateInterval = setInterval(() => {
         ship.fire();
 }, ship.fireRate);
 
+// Call this method whenever upgrades are purchased. Increase the difficulty every 5 purchases
+const checkDifficultyIncrease = () => {
+    if(upgradesPurchased !== 0 && upgradesPurchased % 5 === 0)
+        difficulty++;
+}
+
 // called when the player purchases a damage upgrade
 const upgradeDamage = () => {
     // make sure the player has enough points
@@ -81,6 +111,9 @@ const upgradeDamage = () => {
         // decrement player points by the current cost, then double the cost of the next upgrade
         points -= damageUpgradeCost;
         damageUpgradeCost = Math.floor(damageUpgradeCost * 1.75); // keep it a whole number
+
+        upgradesPurchased++;
+        checkDifficultyIncrease();
 
         // update labels in the menu
         updateCostDisplays();
@@ -96,6 +129,10 @@ const upgradeFireRate = () => {
         // decrement player points by the current cost, then double the cost of the next upgrade
         points -= fireRateUpgradeCost;
         fireRateUpgradeCost = Math.floor(fireRateUpgradeCost * 1.75); // keep it a whole number
+
+        upgradesPurchased++;
+        fireRateUpgradesPurchased++;
+        checkDifficultyIncrease();
 
         // update labels in the menu
         updateCostDisplays();
@@ -118,6 +155,10 @@ const upgradeCannons = () => {
         // decrement player points by the current cost, then double the cost of the next upgrade
         points -= cannonsUpgradeCost;
         cannonsUpgradeCost = Math.floor(cannonsUpgradeCost * 2); // keep it a whole number
+
+        upgradesPurchased++;
+        cannonUpgradesPurchased++;
+        checkDifficultyIncrease();
 
         // update labels in the menu
         updateCostDisplays();
@@ -151,7 +192,8 @@ window.setInterval(() => {
                 ctx,
                 Math.random() * canvas.width,
                 ((Math.random() * 150) + 150) * -1,
-                enemyType
+                enemyType,
+                difficulty
             );
 
             enemies.push(enemy);
