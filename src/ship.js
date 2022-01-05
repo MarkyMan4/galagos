@@ -95,11 +95,11 @@ class Ship {
         }
 
         if(this.numCannons >= 2) {
-            this.addLaser(baseX - 20, baseY + 20);
+            this.addLaser(baseX - 15, baseY + 20);
         }
 
         if(this.numCannons >= 3) {
-            this.addLaser(baseX + 20, baseY + 20);
+            this.addLaser(baseX + 15, baseY + 20);
         }        
     }
 

@@ -169,7 +169,7 @@ const upgradeCannons = () => {
 // spawn 1 - 3 enemies at a random place every second
 window.setInterval(() => {
     if(!paused) {
-        const enemiesToSpawn = Math.ceil(Math.random() * 3);
+        const enemiesToSpawn = Math.ceil(Math.random() * 3) + Math.ceil(difficulty * 1.5); // spawn more enemies based on difficulty
 
         for(let i = 0; i < enemiesToSpawn; i++) {
             /*
