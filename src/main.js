@@ -7,6 +7,9 @@ const cannonsUpCostDisplay = document.getElementById('cannons-up-cost');
 const pointsDisplay = document.getElementById('points-display');
 const upgradeFireRateBtn = document.getElementById('upgrade-fire-rate-btn');
 const upgradeCannonBtn = document.getElementById('upgrade-cannon-btn');
+const damageDisplay = document.getElementById('current-damage');
+const fireRateDisplay = document.getElementById('current-fire-rate');
+const cannonsDisplay = document.getElementById('current-cannons');
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -27,13 +30,13 @@ let fireRateUpgradeCost = 100;
 let cannonsUpgradeCost = 7500;
 
 // maximum # of times each upgrade can be purchased (no limit on damage)
+let damageUpgradesPurchased = 0;
 let fireRateUpgradesPurchased = 0;
 let maxFireRateUpgrades = 10;
 let cannonUpgradesPurchased = 0;
 let maxCannonsUpgrades = 2;
 
 let difficulty = 0;
-let upgradesPurchased = 0; // difficulty increases every 5 upgrade purchases
 
 // create initial stars for the background
 for(let i = 0; i < 750; i++) {
@@ -50,7 +53,7 @@ const updatePointsDisplay = () => {
     pointsDisplay.innerHTML = 'Points available: ' + points;
 }
 
-const updateCostDisplays = () => {
+const updateUpgradeDisplays = () => {
     // show the cost of each upgrade
     damageUpCostDisplay.innerHTML = 'Cost: ' + damageUpgradeCost;
 
@@ -69,6 +72,11 @@ const updateCostDisplays = () => {
     else {
         cannonsUpCostDisplay.innerHTML = 'Cost: ' + cannonsUpgradeCost;
     }
+
+    // show the current values for each of the upgrades
+    damageDisplay.innerHTML = 'Current damage: ' + ship.laserDamage;
+    fireRateDisplay.innerHTML = 'Current fire rate: ' + ship.fireRate;
+    cannonsDisplay.innerHTML = 'Current cannons: ' + ship.numCannons;
 }
 
 // when m pressed, pause game and open menu
@@ -77,7 +85,7 @@ document.addEventListener('keydown', (event) => {
         paused = true;
         menu.style.display = 'block';
 
-        updateCostDisplays();
+        updateUpgradeDisplays();
         updatePointsDisplay();
     }
 });
@@ -97,6 +105,8 @@ let fireRateInterval = setInterval(() => {
 
 // Call this method whenever upgrades are purchased. Increase the difficulty every 5 purchases
 const checkDifficultyIncrease = () => {
+    let upgradesPurchased = damageUpgradesPurchased + fireRateUpgradesPurchased + cannonUpgradesPurchased;
+
     if(upgradesPurchased !== 0 && upgradesPurchased % 5 === 0)
         difficulty++;
 }
@@ -112,11 +122,11 @@ const upgradeDamage = () => {
         points -= damageUpgradeCost;
         damageUpgradeCost = Math.floor(damageUpgradeCost * 1.75); // keep it a whole number
 
-        upgradesPurchased++;
+        damageUpgradesPurchased++;
         checkDifficultyIncrease();
 
         // update labels in the menu
-        updateCostDisplays();
+        updateUpgradeDisplays();
         updatePointsDisplay();
     }
 }
@@ -130,12 +140,11 @@ const upgradeFireRate = () => {
         points -= fireRateUpgradeCost;
         fireRateUpgradeCost = Math.floor(fireRateUpgradeCost * 1.75); // keep it a whole number
 
-        upgradesPurchased++;
         fireRateUpgradesPurchased++;
         checkDifficultyIncrease();
 
         // update labels in the menu
-        updateCostDisplays();
+        updateUpgradeDisplays();
         updatePointsDisplay();
 
         // reset the interval that fires lasers to use the new fire rate
@@ -156,12 +165,11 @@ const upgradeCannons = () => {
         points -= cannonsUpgradeCost;
         cannonsUpgradeCost = Math.floor(cannonsUpgradeCost * 2); // keep it a whole number
 
-        upgradesPurchased++;
         cannonUpgradesPurchased++;
         checkDifficultyIncrease();
 
         // update labels in the menu
-        updateCostDisplays();
+        updateUpgradeDisplays();
         updatePointsDisplay();
     }
 }
